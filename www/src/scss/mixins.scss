@@ -1,0 +1,25 @@
+﻿// Media queries mixin
+$small: 767px;
+$medium: 991px;
+$large: 1200px;
+$xlarge: 1500px;
+
+@mixin mq($media) {
+  @if $media == sm {
+    @media (max-width: $small) {
+      @content;
+    }
+  } @else if $media == md {
+    @media (max-width: $medium) {
+      @content;
+    }
+  } @else if $media == lg {
+    @media (max-width: $large) {
+      @content;
+    }
+  } @else if $media == xlg {
+    @media (max-width: $xlarge) {
+      @content;
+    }
+  }
+}

@@ -1,0 +1,131 @@
+﻿//- UK Слайдер
+mixin uk-slider(mywidth)
+    div(data-uk-slider)
+        .uk-slider-container
+            ul(class='uk-slider uk-grid-width-medium-'+mywidth)
+                block
+            a(class="uk-slidenav uk-slidenav-contrast uk-slidenav-previous" data-uk-slider-item="previous")
+            a(class="uk-slidenav uk-slidenav-contrast uk-slidenav-next" data-uk-slider-item="next")
+
+//- Слайдер из массива
+mixin uk-slider-arr(mywidth, myarr)
+    div(data-uk-slider)
+        .uk-slider-container
+            ul(class='uk-slider uk-grid-width-medium-'+mywidth)
+                - each slide in myarr
+                    li
+                        div
+                            img(src='img/' + slide + '.png')
+            a(class="uk-slidenav uk-slidenav-contrast uk-slidenav-previous" data-uk-slider-item="previous")
+            a(class="uk-slidenav uk-slidenav-contrast uk-slidenav-next" data-uk-slider-item="next")
+
+//- Слайдер из массива без фикс
+mixin uk-slider-arr-nofix(myarr)
+    div(data-uk-slider)
+        .uk-slider-container
+            ul(class='uk-slider')
+                - each slide in myarr
+                    li
+                        div
+                            img(src='img/' + slide + '.png')
+            a(class="uk-slidenav uk-slidenav-contrast uk-slidenav-previous" data-uk-slider-item="previous")
+            a(class="uk-slidenav uk-slidenav-contrast uk-slidenav-next" data-uk-slider-item="next")
+
+//- Сетка фикс
+mixin uk-fgrd(mywidth)
+    ul(class='uk-grid uk-grid-width-medium-' + mywidth)
+        block
+
+//- Li > div > block
+mixin lidivblock(myclass)
+    li
+        div(class=myclass)
+            block
+
+//- Li > div > block
+mixin li-divblock(myclass)
+    li(class=myclass)
+        div
+            block
+
+//- Контейнер-фикс-сетка
+mixin uk-cont-fgrd(width, classmy)
+    .uk-block(class=classmy)
+        .uk-container.uk-container-center
+            ul.uk-grid(class='uk-grid uk-grid-width-medium-'+width)
+                block
+
+
+//- Контейнер-блок
+mixin uk-cont-blk(myclass)
+    .uk-block(class=myclass)
+        .uk-container.uk-container-center
+            block
+
+//- Контейнер с классом и заголовком h2
+mixin uk-cont-blk-h2(myclass, myh2)
+    .uk-block(class=myclass)
+        .uk-container.uk-container-center
+            h2=myh2
+            block
+
+//- Контейнер с классом и заголовком h3
+mixin uk-cont-blk-h3(myclass, myh3)
+    .uk-block(class=myclass)
+        .uk-container.uk-container-center
+            h3=myh3
+            block
+
+//- Контейнер с классом, заголовком h3 и сеткой
+mixin uk-cont-h3-fgrd(mywidth, myclass, myh3)
+    .uk-block(class=myclass)
+        .uk-container.uk-container-center
+            h3=myh3
+            ul.uk-grid(class='uk-grid uk-grid-width-medium-' + mywidth)
+                block
+
+//- Социальные кнопки
+mixin social()
+    .social
+        each myval, index in social
+                .icon
+                    a(href=myval)
+                        img(class=index src="img/icos-soc.png")
+
+//- Форма-верт
+//- Может попробовать через each с объектами, типа "type":"mail". Или через массив-объект со свойствами.
+mixin formv(myid, myclass, myutm, myname, mymail, myphone, myquest)
+    form(id=myid, class='uk-form '+ myclass, action="javascript:void(null);" method="POST")
+        // UTM
+        if myutm
+            input(type="hidden" name="utm_source" class="source" value!="<?php echo isset($_GET['utm_source']) ? $_GET['utm_source'] : '' ;?>")
+            input(type="hidden" name="utm_term" value!="<?php echo isset($_GET['utm_term']) ? $_GET['utm_term'] : '' ;?>")
+            input(type="hidden" name="utm_type" value!="<?php echo isset($_GET['utm_type']) ? $_GET['utm_type'] : '' ;?>")
+            input(type="hidden" name="utm_content" value!="<?php echo isset($_GET['utm_content']) ? $_GET['utm_content'] : '' ;?>")
+            input(type="hidden" name="utm_medium" value!="<?php echo isset($_GET['utm_medium']) ? $_GET['utm_medium'] : '' ;?>")
+            input(type="hidden" name="utm_campaign" value!="<?php echo isset($_GET['utm_campaign']) ? $_GET['utm_campaign'] : '' ;?>")
+
+        // Fieldset
+        fieldset
+            input(type="hidden" name="fransh" class="source" value="")
+            if myname
+                input(class=myname placeholder="Ваше имя*" type="text" required minlength="2" name="name")
+            if mymail
+                input(class="" placeholder="Ваш телефон*" type="text" required minlength="2" name="phone")
+            if myphone
+                input(class="" placeholder="Ваш email*" type="email" required minlength="2" name="email")
+            if myquest
+                textarea(class="uk-width-1-1" placeholder="Ваш вопрос" minlength="2" name="vopros")
+            button(type="submit" class="uk-button") Отправить
+
+//- Сетка с иконками
+mixin gridico(mywidth)
+    .uk-grid(class='uk-grid-width-' + mywidth)
+        - each val, key in gridico
+            li
+                div
+                    .pic
+                        img(src='img/' + key + '.jpg')
+                    p #{val}
+
+

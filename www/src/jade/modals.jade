@@ -1,0 +1,45 @@
+﻿div#ordermodal.uk-modal
+	div.uk-modal-dialog
+		a(href="" class="uk-modal-close uk-close uk-close-alt")
+		h3 Оставить заявку
+		h4
+		form#formamod.js_form.uk-form(action="javascript:void(null);" method="POST")
+			input(type="hidden" name="fransh" class="source" value="Заявка")
+			input(type="hidden" name="act" class="source" value="")
+			input(type="hidden" name="kolv" class="source" value="")
+			input(type="hidden" name="city")
+			input(placeholder="Ваше имя*" type="text" required name="name")
+			input(placeholder="Ваш телефон* " required type="text" name="phone")
+			input(placeholder="Ваш email* " required type="email" name="email")
+			button(type="submit" class="uk-button uk-width-1-1") Отправить
+
+div#paymodal.uk-modal
+	div.uk-modal-dialog
+		a(href="" class="uk-modal-close uk-close uk-close-alt")
+		h3 Оплата курса
+		h4 Оставляйте заявку и получите реквизиты на оплату на свой почтовый ящик
+		form#formamod2.js_form.uk-form(action="javascript:void(null);" method="POST")
+			input(type="hidden" name="fransh" class="source" value="Заявка")
+			input(type="hidden" name="act" class="source" value="pay")
+			input(type="hidden" name="kolv" class="source" value="")
+			input(type="hidden" name="prod" class="source" value="")
+			input(type="hidden" name="price" class="source" value="")
+
+			label
+				input(type="radio" name="payer" value="fizik" checked)
+				| Физическое лицо
+			label
+				input(type="radio" name="payer" value="jurik")
+				| Юридическое лицо
+
+			input(placeholder="Ваше имя*" type="text" required name="name")
+			input(placeholder="Ваш телефон* " required type="text" name="phone")
+			input(placeholder="Ваш email* " required type="email" name="email")
+			button(type="submit" class="uk-button uk-width-1-1") Отправить
+
+
+div.uk-modal#modal3
+	.uk-modal-dialog
+		a(href="" class="uk-modal-close uk-close uk-close-alt")
+		h3 Заявка отправлена
+		p Спасибо за заявку! Мы скоро с Вами свяжемся.

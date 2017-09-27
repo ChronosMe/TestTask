@@ -1,0 +1,59 @@
+﻿/* Main */
+%opn {
+  font-family: 'Open Sans', sans-serif;
+}
+html{
+  background-color: $gray1;
+}
+body {
+  font-family: 'Open Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  max-width: 1920px;
+  margin: auto;
+
+  @include mq(md) {
+    min-height:1024px;
+  }
+  @include mq(sm) {
+    min-height: auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: inherit;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+ul, li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+fieldset{
+  border: none;
+  margin:0;
+  padding:0;
+}
+
+.uk-button{
+  background-color: $purple;
+  color: #fff;
+  font-size: 1.5em;
+  padding: 15px 85px;
+  border-radius: 10px;
+  transition: 0.3s;
+  &:hover{
+    background-color: darken($purple,10%);
+    color: #fff;
+  }
+  @include mq(sm) {
+    padding:15px 60px;
+  }
+}
+
+.uk-container {
+  max-width: 985+70px;
+}

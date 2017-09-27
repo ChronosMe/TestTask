@@ -1,0 +1,184 @@
+﻿extends jade/mainlayout
+
+block head
+
+block content
+	section
+		#cart.cart
+			.uk-container.uk-container-center
+				ul.uk-grid.uk-grid-collapse.cart__body
+					li.uk-width-medium-6-10.shipform
+						div.shipform__body(v-if="!order")
+							ul.shipform__nav
+								li(v-bind:class="currentView == 'shipping' ? 'active' : ''") Shipping
+								li(v-bind:class="currentView == 'billing' ? 'active' : ''") Billing
+								li(v-bind:class="currentView == 'payment' ? 'active' : ''") Payment
+							.shipform__content
+								form(v-on:submit.prevent="submitForm()")
+									fieldset(v-show="currentView == 'shipping'")
+										h2 Shipping Info
+										.shipform__block
+											h4 Recepient
+											.shipform__input
+												input(type="text" name="name" placeholder="Full Name" v-model="shippingData.name" v-on:input="$v.shippingData.name.$touch" v-bind:class="$v.shippingData.name.required ? '' : 'error'")
+												span.shipform__validate.form-group__message(v-if="!$v.shippingData.name.required && formErrors") Please enter recipient full name
+												//.shipform__validate() {{ $v.name.$errors.0.message }} Please enter recipient full name
+											.shipform__input
+												input(type="text" name="phone" placeholder="Daytime Phone" v-model="shippingData.phone")
+												span For delivery
+													br.uk-hidden-small.uk-hidden-medium
+													=' '
+													| questions only
+										.shipform__block
+											h4 Address
+											.shipform__input
+												input(type="text" name="address" placeholder="Street Address" v-model="shippingData.address.address")
+											.shipform__input
+												input(type="text" name="opts" placeholder="Apt, Suite, Bigd, Gate Code. (optional)" v-model="shippingData.address.opts")
+											.shipform__input
+												input(type="text" name="city" placeholder="City" v-model="shippingData.address.city")
+												i.shipform__target.uk-icon-crosshairs(v-on:click="getGeo()")
+											.shipform__input.shipform__input--multi
+												select(name='country' v-model="shippingData.address.country" placeholder="Country")
+													option(selected disabled value="") Country
+													option(v-for="country, i in countries" v-bind:value="i") {{ country }}
+
+												input(type="text" name="zip" placeholder="ZIP" v-model="shippingData.address.zip")
+											.shipform__button
+												button.uk-button(type="button" v-on:click="nextStep('billing')") Continue
+
+									fieldset(v-show="currentView == 'billing'")
+										h2 Billing Information
+											span
+												a(v-on:click="asShipping") Same as shipping
+										.shipform__block
+											h4 Billing Contact
+											.shipform__input
+												input(type="text" v-model="billingData.name" name="billingName" placeholder="Full Name")
+											.shipform__input
+												input(type="email" v-model="billingData.email" name="billingEmail" placeholder="Email Address")
+										.shipform__block
+											h4 Billing Address
+											.shipform__input
+												input(type="text" v-model="billingData.address.address" name="billingAddress" placeholder="Street Address")
+											.shipform__input
+												input(type="text" v-model="billingData.address.opts" name="billingOpts" placeholder="Apt, Suite, Bigd, Gate Code. (optional)")
+											.shipform__input
+												input(type="text" v-model="billingData.address.city" name="billingCity" placeholder="City")
+											.shipform__input.shipform__input--multi
+												select(name='billingCountry' v-model="billingData.address.country")
+													option(selected disabled value="") Country
+													option(v-for="country, i in countries" v-bind:value="i") {{ country }}
+
+												input(type="text" name="billingZip" v-model="billingData.address.zip" placeholder="ZIP")
+											.shipform__button
+												button.uk-button(type="button" v-on:click="nextStep('payment')") Continue
+
+									fieldset(v-show="currentView == 'payment'")
+										h2 Payment
+										.shipform__attent
+											img(src='assets/img/secure.png')
+											| This is a secure 128-bit SSL encrypted payment
+										h4 Cardholder Name
+										.shipform__input
+											input(type="text" v-model="paymentData.name" name="paymentName" placeholder="Name as it appears on your card")
+										.separator
+										h4 Card Number
+										.shipform__input
+											input#cardNumber(type="text" v-model="paymentData.card" name="paymentName" placeholder="XXXX XXXX XXXX XXXX" v-on:change="detectCard()")
+											span.shipform__cardtype(v-if="cardType && cardType !== 'visa'") {{ cardType }}
+											span.shipform__cardtype(v-if="cardType=='visa'")
+												img(src='assets/img/visa-card.png')
+										.separator
+										.shipform__smallfields
+											.shipform__smallitem
+												h4 Expire Date
+												.shipform__input
+													input(type="text" v-model="paymentData.expdate" name="paymentName" placeholder="MM / YY")
+											.shipform__smallitem
+												h4 Security Code
+												.shipform__input
+													input(type="text" v-model="paymentData.code" name="paymentName")
+										.separator
+
+										.shipform__button
+											button.uk-button(type="submit") Pay Securely
+
+						.shipform__body(v-else)
+							.shipform__thanks
+								h2 Thank you for your order!
+								p
+									strong Order number is: 2342342342342
+								p You will receive an email confirmation
+									br
+									| shortly to
+									=' '
+									a {{ billingData.email }}
+								.separator
+								p Estimated delivery Day is
+									br
+									strong Friday 1st April 2016
+								.separator
+								a Print Recipe
+
+
+
+
+					li.uk-width-medium-4-10.ordersum
+						div.ordersum__body(v-bind:class="order ? 'ordered' : ''")
+							.ordersum__head
+								h2 Order Summary
+								span
+									a edit order
+							ul.orditems
+								li.orditems__item
+									.orditems__img
+										img(src="assets/img/bitmap.png")
+									.orditems__texts
+										.orditems__title The Chelsea Boot
+										.orditems__color Black
+										.orditems__qnt Quantity:
+											span 1
+									.orditems__price $235
+								li.orditems__item
+									.orditems__img
+										img(src="assets/img/bitmap2.png")
+									.orditems__texts
+										.orditems__title The Chelsea Boot
+										.orditems__color Black
+										.orditems__qnt Quantity:
+											span 1
+									.orditems__price $235
+								li.orditems__item
+									.orditems__img
+										img(src="assets/img/bitmap3.png")
+									.orditems__texts
+										.orditems__title The Chelsea Boot
+										.orditems__color Black
+										.orditems__qnt Quantity:
+											span 1
+									.orditems__price $235
+
+
+							.ordersum__totals
+								.ordersum__total Subtotal
+									span $398
+								.ordersum__total Shipping
+									span Free
+								.ordersum__total Taxes
+									span $12.12
+							.ordersum__totals
+								.ordersum__total.ordersum__total--final Total
+									span $410.12
+
+
+
+
+
+
+
+
+
+
+
+

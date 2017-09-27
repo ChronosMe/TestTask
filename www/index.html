@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Тестовое задание</title>
+    <meta name="description" content="">
+    <!--link(rel = "shortcut icon" href = "img/favicon.ico" type = "image/x-icon")-->
+    <!-- стили-->
+    <link rel="stylesheet" href="assets/css/uikit.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&amp;amp;subset=cyrillic" rel="stylesheet">
+    <!--скрипты-->
+    <!--script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')-->
+    <script src="assets/js/jquery-1.10.2.min.js"></script>
+    <script src="assets/js/uikit.min.js"></script>
+    <!--script(src='js/ofi.browser.js')-->
+    <script src="assets/js/vue.js"></script>
+    <script src="assets/js/vuelidate.min.js"></script>
+    <script src="assets/js/validators.min.js"></script>
+    <script src="assets/js/detect-card.js"></script>
+    <script src="assets/js/scripts.js"></script>
+  </head>
+  <!-- Блок-->
+  <body>
+    <header>
+      <div class="header">
+        <div class="uk-container uk-container-center">
+          <ul class="uk-grid">
+            <li class="uk-width-medium-2-3">
+              <div>
+                <div class="header__title"><img src="assets/img/logo.png"> Front-end Developer Test Task</div>
+              </div>
+            </li>
+            <li class="uk-width-medium-1-3">
+              <div>
+                <div class="header__right">
+                  <div class="header__cart"><span>Cart</span><img src="assets/img/cart.png">
+                    <!--i.uk-icon-cart-->
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </header>
+    <section>
+      <div id="cart" class="cart">
+        <div class="uk-container uk-container-center">
+          <ul class="uk-grid uk-grid-collapse cart__body">
+            <li class="uk-width-medium-6-10 shipform">
+              <div v-if="!order" class="shipform__body">
+                <ul class="shipform__nav">
+                  <li v-bind:class="currentView == 'shipping' ? 'active' : ''">Shipping</li>
+                  <li v-bind:class="currentView == 'billing' ? 'active' : ''">Billing</li>
+                  <li v-bind:class="currentView == 'payment' ? 'active' : ''">Payment</li>
+                </ul>
+                <div class="shipform__content">
+                  <form v-on:submit.prevent="submitForm()">
+                    <fieldset v-show="currentView == 'shipping'">
+                      <h2>Shipping Info</h2>
+                      <div class="shipform__block">
+                        <h4>Recepient</h4>
+                        <div class="shipform__input">
+                          <input type="text" name="name" placeholder="Full Name" v-model="shippingData.name" v-on:input="$v.shippingData.name.$touch" v-bind:class="$v.shippingData.name.required ? '' : 'error'"><span v-if="!$v.shippingData.name.required &amp;&amp; formErrors" class="shipform__validate form-group__message">Please enter recipient full name</span>
+                          <!--.shipform__validate() {{ $v.name.$errors.0.message }} Please enter recipient full name-->
+                        </div>
+                        <div class="shipform__input">
+                          <input type="text" name="phone" placeholder="Daytime Phone" v-model="shippingData.phone"><span>For delivery<br class="uk-hidden-small uk-hidden-medium"> questions only</span>
+                        </div>
+                      </div>
+                      <div class="shipform__block">
+                        <h4>Address</h4>
+                        <div class="shipform__input">
+                          <input type="text" name="address" placeholder="Street Address" v-model="shippingData.address.address">
+                        </div>
+                        <div class="shipform__input">
+                          <input type="text" name="opts" placeholder="Apt, Suite, Bigd, Gate Code. (optional)" v-model="shippingData.address.opts">
+                        </div>
+                        <div class="shipform__input">
+                          <input type="text" name="city" placeholder="City" v-model="shippingData.address.city"><i v-on:click="getGeo()" class="shipform__target uk-icon-crosshairs"></i>
+                        </div>
+                        <div class="shipform__input shipform__input--multi">
+                          <select name="country" v-model="shippingData.address.country" placeholder="Country">
+                            <option selected disabled value="">Country</option>
+                            <option v-for="country, i in countries" v-bind:value="i">{{ country }}</option>
+                          </select>
+                          <input type="text" name="zip" placeholder="ZIP" v-model="shippingData.address.zip">
+                        </div>
+                        <div class="shipform__button">
+                          <button type="button" v-on:click="nextStep('billing')" class="uk-button">Continue</button>
+                        </div>
+                      </div>
+                    </fieldset>
+                    <fieldset v-show="currentView == 'billing'">
+                      <h2>Billing Information<span><a v-on:click="asShipping">Same as shipping</a></span></h2>
+                      <div class="shipform__block">
+                        <h4>Billing Contact</h4>
+                        <div class="shipform__input">
+                          <input type="text" v-model="billingData.name" name="billingName" placeholder="Full Name">
+                        </div>
+                        <div class="shipform__input">
+                          <input type="email" v-model="billingData.email" name="billingEmail" placeholder="Email Address">
+                        </div>
+                      </div>
+                      <div class="shipform__block">
+                        <h4>Billing Address</h4>
+                        <div class="shipform__input">
+                          <input type="text" v-model="billingData.address.address" name="billingAddress" placeholder="Street Address">
+                        </div>
+                        <div class="shipform__input">
+                          <input type="text" v-model="billingData.address.opts" name="billingOpts" placeholder="Apt, Suite, Bigd, Gate Code. (optional)">
+                        </div>
+                        <div class="shipform__input">
+                          <input type="text" v-model="billingData.address.city" name="billingCity" placeholder="City">
+                        </div>
+                        <div class="shipform__input shipform__input--multi">
+                          <select name="billingCountry" v-model="billingData.address.country">
+                            <option selected disabled value="">Country</option>
+                            <option v-for="country, i in countries" v-bind:value="i">{{ country }}</option>
+                          </select>
+                          <input type="text" name="billingZip" v-model="billingData.address.zip" placeholder="ZIP">
+                        </div>
+                        <div class="shipform__button">
+                          <button type="button" v-on:click="nextStep('payment')" class="uk-button">Continue</button>
+                        </div>
+                      </div>
+                    </fieldset>
+                    <fieldset v-show="currentView == 'payment'">
+                      <h2>Payment</h2>
+                      <div class="shipform__attent"><img src="assets/img/secure.png">This is a secure 128-bit SSL encrypted payment</div>
+                      <h4>Cardholder Name</h4>
+                      <div class="shipform__input">
+                        <input type="text" v-model="paymentData.name" name="paymentName" placeholder="Name as it appears on your card">
+                      </div>
+                      <div class="separator"></div>
+                      <h4>Card Number</h4>
+                      <div class="shipform__input">
+                        <input id="cardNumber" type="text" v-model="paymentData.card" name="paymentName" placeholder="XXXX XXXX XXXX XXXX" v-on:change="detectCard()"><span v-if="cardType &amp;&amp; cardType !== 'visa'" class="shipform__cardtype">{{ cardType }}</span><span v-if="cardType=='visa'" class="shipform__cardtype"><img src="assets/img/visa-card.png"></span>
+                      </div>
+                      <div class="separator"></div>
+                      <div class="shipform__smallfields">
+                        <div class="shipform__smallitem">
+                          <h4>Expire Date</h4>
+                          <div class="shipform__input">
+                            <input type="text" v-model="paymentData.expdate" name="paymentName" placeholder="MM / YY">
+                          </div>
+                        </div>
+                        <div class="shipform__smallitem">
+                          <h4>Security Code</h4>
+                          <div class="shipform__input">
+                            <input type="text" v-model="paymentData.code" name="paymentName">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="separator"></div>
+                      <div class="shipform__button">
+                        <button type="submit" class="uk-button">Pay Securely</button>
+                      </div>
+                    </fieldset>
+                  </form>
+                </div>
+              </div>
+              <div v-else class="shipform__body">
+                <div class="shipform__thanks">
+                  <h2>Thank you for your order!</h2>
+                  <p><strong>Order number is: 2342342342342</strong></p>
+                  <p>You will receive an email confirmation<br>shortly to <a>{{ billingData.email }}</a>
+                  </p>
+                  <div class="separator"></div>
+                  <p>Estimated delivery Day is<br><strong>Friday 1st April 2016</strong></p>
+                  <div class="separator"></div><a>Print Recipe</a>
+                </div>
+              </div>
+            </li>
+            <li class="uk-width-medium-4-10 ordersum">
+              <div v-bind:class="order ? 'ordered' : ''" class="ordersum__body">
+                <div class="ordersum__head">
+                  <h2>Order Summary</h2><span><a>edit order</a></span>
+                </div>
+                <ul class="orditems">
+                  <li class="orditems__item">
+                    <div class="orditems__img"><img src="assets/img/bitmap.png"></div>
+                    <div class="orditems__texts">
+                      <div class="orditems__title">The Chelsea Boot</div>
+                      <div class="orditems__color">Black</div>
+                      <div class="orditems__qnt">Quantity:<span>1</span></div>
+                    </div>
+                    <div class="orditems__price">$235</div>
+                  </li>
+                  <li class="orditems__item">
+                    <div class="orditems__img"><img src="assets/img/bitmap2.png"></div>
+                    <div class="orditems__texts">
+                      <div class="orditems__title">The Chelsea Boot</div>
+                      <div class="orditems__color">Black</div>
+                      <div class="orditems__qnt">Quantity:<span>1</span></div>
+                    </div>
+                    <div class="orditems__price">$235</div>
+                  </li>
+                  <li class="orditems__item">
+                    <div class="orditems__img"><img src="assets/img/bitmap3.png"></div>
+                    <div class="orditems__texts">
+                      <div class="orditems__title">The Chelsea Boot</div>
+                      <div class="orditems__color">Black</div>
+                      <div class="orditems__qnt">Quantity:<span>1</span></div>
+                    </div>
+                    <div class="orditems__price">$235</div>
+                  </li>
+                </ul>
+                <div class="ordersum__totals">
+                  <div class="ordersum__total">Subtotal<span>$398</span></div>
+                  <div class="ordersum__total">Shipping<span>Free</span></div>
+                  <div class="ordersum__total">Taxes<span>$12.12</span></div>
+                </div>
+                <div class="ordersum__totals">
+                  <div class="ordersum__total ordersum__total--final">Total<span>$410.12</span></div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <div id="ordermodal" class="uk-modal">
+      <div class="uk-modal-dialog"><a href="" class="uk-modal-close uk-close uk-close-alt"></a>
+        <h3>Оставить заявку</h3>
+        <h4></h4>
+        <form id="formamod" action="javascript:void(null);" method="POST" class="js_form uk-form">
+          <input type="hidden" name="fransh" value="Заявка" class="source">
+          <input type="hidden" name="act" value="" class="source">
+          <input type="hidden" name="kolv" value="" class="source">
+          <input type="hidden" name="city">
+          <input placeholder="Ваше имя*" type="text" required name="name">
+          <input placeholder="Ваш телефон* " required type="text" name="phone">
+          <input placeholder="Ваш email* " required type="email" name="email">
+          <button type="submit" class="uk-button uk-width-1-1">Отправить</button>
+        </form>
+      </div>
+    </div>
+    <div id="paymodal" class="uk-modal">
+      <div class="uk-modal-dialog"><a href="" class="uk-modal-close uk-close uk-close-alt"></a>
+        <h3>Оплата курса</h3>
+        <h4>Оставляйте заявку и получите реквизиты на оплату на свой почтовый ящик</h4>
+        <form id="formamod2" action="javascript:void(null);" method="POST" class="js_form uk-form">
+          <input type="hidden" name="fransh" value="Заявка" class="source">
+          <input type="hidden" name="act" value="pay" class="source">
+          <input type="hidden" name="kolv" value="" class="source">
+          <input type="hidden" name="prod" value="" class="source">
+          <input type="hidden" name="price" value="" class="source">
+          <label>
+            <input type="radio" name="payer" value="fizik" checked>Физическое лицо
+          </label>
+          <label>
+            <input type="radio" name="payer" value="jurik">Юридическое лицо
+          </label>
+          <input placeholder="Ваше имя*" type="text" required name="name">
+          <input placeholder="Ваш телефон* " required type="text" name="phone">
+          <input placeholder="Ваш email* " required type="email" name="email">
+          <button type="submit" class="uk-button uk-width-1-1">Отправить</button>
+        </form>
+      </div>
+    </div>
+    <div id="modal3" class="uk-modal">
+      <div class="uk-modal-dialog"><a href="" class="uk-modal-close uk-close uk-close-alt"></a>
+        <h3>Заявка отправлена</h3>
+        <p>Спасибо за заявку! Мы скоро с Вами свяжемся.</p>
+      </div>
+    </div>
+    <!-- Футер-->
+    <footer></footer>
+  </body>
+</html>

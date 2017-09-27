@@ -1,0 +1,16 @@
+include variables
+include mixins
+doctype html
+html(lang='ru')
+	head
+		block head
+		include head
+
+	// Блок
+	body
+		include header
+
+		block content
+
+		include modals
+		include footer
